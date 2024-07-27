@@ -6,91 +6,129 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hello World</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .square {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #4b5563;
-            color: white;
-            margin: 2px;
+    <link rel="stylesheet" href="style.css">
+    <script>
+        function showpopup() {
+            document.getElementById('hero').style.display = 'none';
+            document.getElementById('box').style.display = 'block';
         }
 
-        .player-detail {
-            height: 50px;
-            background-color: #34d399;
-            color: white;
-            margin-top: 10px;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100px;
-            margin: 5px;
+        function handleOptionClick(event) {
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
         }
 
-        .option {
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
+        function showPlayerOptions() {
+            const selectedTotalCount = document.querySelector('input[name="totalCount"]:checked');
+            if (selectedTotalCount) {
+                document.getElementById('totalCountSection').style.display = 'none';
+                document.getElementById('playerCountSection').style.display = 'block';
+                document.getElementById('navigationButtons').style.display = 'none';
+                document.getElementById('playerDetailsSection').style.display = 'none';
+                document.getElementById('nextPlayerCountButton').style.display = 'block';
+            } else {
+                alert('Please select a total count option.');
+            }
         }
 
-        .option:hover {
-            background-color: #374151;
-            transform: scale(1.05);
+        function showPlayerDetails() {
+            const selectedPlayerCount = document.querySelector('input[name="playerCount"]:checked');
+            if (selectedPlayerCount) {
+                const playerCount = parseInt(selectedPlayerCount.value, 10);
+                const totalCount = parseInt(document.querySelector('input[name="totalCount"]:checked').value, 10);
+
+                // Generate input fields for each player
+                const playerDetailsContainer = document.getElementById('playerDetailsContainer');
+                playerDetailsContainer.innerHTML = '';
+                for (let i = 1; i <= playerCount; i++) {
+                    const playerDiv = document.createElement('div');
+                    playerDiv.className = 'player-input flex flex-col mb-4';
+
+                    const playerNumberLabel = document.createElement('label');
+                    playerNumberLabel.className = 'text-white';
+                    playerNumberLabel.innerText = `Player ${i} Number:`;
+                    playerDiv.appendChild(playerNumberLabel);
+
+                    const playerNumberInput = document.createElement('input');
+                    playerNumberInput.type = 'number';
+                    playerNumberInput.name = `playerNumber${i}`;
+                    playerNumberInput.className = 'input-field';
+                    playerNumberInput.min = 1;
+                    playerNumberInput.max = totalCount;
+                    playerDiv.appendChild(playerNumberInput);
+
+                    const playerNameLabel = document.createElement('label');
+                    playerNameLabel.className = 'text-white mt-2';
+                    playerNameLabel.innerText = `Player ${i} Name:`;
+                    playerDiv.appendChild(playerNameLabel);
+
+                    const playerNameInput = document.createElement('input');
+                    playerNameInput.type = 'text';
+                    playerNameInput.name = `playerName${i}`;
+                    playerNameInput.className = 'input-field';
+                    playerDiv.appendChild(playerNameInput);
+
+                    playerDetailsContainer.appendChild(playerDiv);
+                }
+
+                document.getElementById('playerCountSection').style.display = 'none';
+                document.getElementById('playerDetailsSection').style.display = 'block';
+                document.getElementById('nextPlayerCountButton').style.display = 'none';
+                document.getElementById('playButton').style.display = 'block';
+            } else {
+                alert('Please select a player count option.');
+            }
         }
 
-        .option.selected {
-            background-color: #1f2937;
-        }
+        function play() {
+            const totalCount = parseInt(document.querySelector('input[name="totalCount"]:checked').value, 10);
+            const playerDetailsContainer = document.getElementById('playerDetailsContainer');
+            const playerInputs = playerDetailsContainer.querySelectorAll('.player-input');
 
-        .play-button {
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-        }
+            const players = [];
+            playerInputs.forEach(input => {
+                const playerNumber = input.querySelector('input[type="number"]').value;
+                const playerName = input.querySelector('input[type="text"]').value;
+                players.push({ number: playerNumber, name: playerName });
+            });
 
-        .play-button:hover {
-            background-color: #059669;
-            transform: scale(1.05);
-        }
+            document.querySelector('.box').style.display = 'none';
 
-        .disabled-button {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
+            const body = document.querySelector('body');
 
-        .content-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 16px;
-            width: 90%;
-        }
+            const contentContainer = document.createElement('div');
+            contentContainer.className = 'content-container';
 
-        .squares-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
+            const squaresContainer = document.createElement('div');
+            squaresContainer.className = 'squares-container';
 
-        .players-container {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            margin-top: 16px;
-        }
+            for (let i = 1; i <= totalCount; i++) {
+                const square = document.createElement('div');
+                square.className = 'square';
+                square.innerText = i;
+                squaresContainer.appendChild(square);
+            }
 
-        .popup {
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            const playersContainer = document.createElement('div');
+            playersContainer.className = 'players-container';
+
+            players.forEach(player => {
+                const playerDiv = document.createElement('div');
+                playerDiv.className = 'player-detail';
+                playerDiv.innerText = `${player.name} (Number: ${player.number})`;
+                playersContainer.appendChild(playerDiv);
+            });
+
+            contentContainer.appendChild(squaresContainer);
+            contentContainer.appendChild(playersContainer);
+            body.appendChild(contentContainer);
         }
-    </style>
+    </script>
 </head>
 
 <body class="w-full h-screen bg-zinc-900 flex flex-col items-center justify-center">
+
     <div id="hero" class="w-full h-100 flex flex-col items-center justify-center">
         <h1 class="text-white text-6xl mb-5 underline text-center">Number Game</h1>
         <img src="./image.png" alt="img" class="w-3/5 mb-5">
@@ -99,8 +137,10 @@
 
     <div id="box" class="box w-3/5 h-3/5 bg-zinc-800 p-4 flex flex-col justify-between" style="display: none;">
         <form action="" class="flex flex-col h-full justify-between">
+            <!-- Section for total count options -->
             <div id="totalCountSection">
-                <label for="totalCount" class="block mb-4 text-xl font-medium text-white text-center">Choose the total count:</label>
+                <label for="totalCount" class="block mb-4 text-xl font-medium text-white text-center">Choose the total
+                    count:</label>
                 <div class="grid grid-cols-3 gap-4 flex-grow">
                     <label class="option bg-zinc-700 h-20 flex items-center justify-center text-white font-bold"
                         onclick="handleOptionClick(event)">
@@ -141,8 +181,10 @@
                 </div>
             </div>
 
+            <!-- Section for player count options -->
             <div id="playerCountSection" style="display: none;">
-                <label for="playerCount" class="block mb-4 text-xl font-medium text-white text-center">Choose the number of players:</label>
+                <label for="playerCount" class="block mb-4 text-xl font-medium text-white text-center">Choose the number
+                    of players:</label>
                 <div class="grid grid-cols-3 gap-4 flex-grow">
                     <label class="option bg-green-500 h-20 flex items-center justify-center text-white font-bold"
                         onclick="handleOptionClick(event)">
@@ -167,158 +209,34 @@
                 </div>
             </div>
 
-            <div id="navigationButtons" class="flex justify-between mt-4">
-                <button type="button" id="previousButton" class="px-4 py-2 bg-gray-500 text-white font-bold rounded disabled-button" disabled onclick="showTotalCountOptions()">Previous</button>
-                <button type="button" id="nextButton" onclick="showPlayerOptions()" class="px-4 py-2 bg-blue-500 text-white font-bold rounded hover:bg-blue-700 transition-transform transform hover:scale-105">Next</button>
+            <!-- Section for player details input -->
+            <div id="playerDetailsSection" style="display: none;">
+                <label for="playerDetails" class="block mb-4 text-xl font-medium text-white text-center">Enter player
+                    details:</label>
+                <div id="playerDetailsContainer" class="flex flex-col flex-grow overflow-y-auto"></div>
             </div>
 
+            <!-- Navigation Buttons -->
+            <div id="navigationButtons" class="flex justify-between mt-4">
+                <button id="previousButton" class="px-4 py-2 bg-gray-500 text-white font-bold rounded disabled-button"
+                    disabled>Previous</button>
+                <button type="button" onclick="showPlayerOptions()"
+                    class="px-4 py-2 bg-blue-500 text-white font-bold rounded hover:bg-blue-700 transition-transform transform hover:scale-105">Next</button>
+            </div>
+
+            <!-- Next Button after player count selection -->
+            <div id="nextPlayerCountButton" class="flex justify-center mt-4" style="display: none;">
+                <button type="button" onclick="showPlayerDetails()"
+                    class="px-4 py-2 bg-blue-500 text-white font-bold rounded hover:bg-blue-700 transition-transform transform hover:scale-105">Next</button>
+            </div>
+
+            <!-- Play Button -->
             <div id="playButton" class="flex justify-center mt-4" style="display: none;">
                 <button type="button" onclick="play()"
                     class="px-4 py-2 bg-green-500 text-white font-bold rounded play-button">Play</button>
             </div>
         </form>
     </div>
-
-    <script>
-        let currentPlayerIndex = 1;
-        let totalCount = 0;
-        let playerCount = 0;
-        const playerDetails = [];
-
-        function showpopup() {
-            document.getElementById('hero').style.display = 'none';
-            document.getElementById('box').style.display = 'block';
-        }
-
-        function handleOptionClick(event) {
-            const options = event.currentTarget.parentNode.children;
-            Array.from(options).forEach(option => option.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
-        }
-
-        function showPlayerOptions() {
-            const selectedTotalCount = document.querySelector('input[name="totalCount"]:checked');
-            if (selectedTotalCount) {
-                document.getElementById('totalCountSection').style.display = 'none';
-                document.getElementById('playerCountSection').style.display = 'block';
-                document.getElementById('previousButton').disabled = false;
-                document.getElementById('previousButton').classList.remove('disabled-button');
-                document.getElementById('playButton').style.display = 'block';
-            } else {
-                alert('Please select a total count option.');
-            }
-        }
-
-        function showTotalCountOptions() {
-            document.getElementById('totalCountSection').style.display = 'block';
-            document.getElementById('playerCountSection').style.display = 'none';
-            document.getElementById('previousButton').disabled = true;
-            document.getElementById('previousButton').classList.add('disabled-button');
-            document.getElementById('playButton').style.display = 'none';
-        }
-
-        function play() {
-            totalCount = parseInt(document.querySelector('input[name="totalCount"]:checked').value, 10);
-            playerCount = parseInt(document.querySelector('input[name="playerCount"]:checked').value, 10);
-
-            document.querySelector('.box').style.display = 'none';
-            showPlayerInputPopup();
-        }
-
-        function showPlayerInputPopup() {
-            const popup = document.createElement('div');
-            popup.className = 'popup bg-white rounded-lg p-4 absolute inset-0 m-auto';
-            popup.style.width = '300px';
-            popup.style.height = '300px';
-
-            const header = document.createElement('h3');
-            header.innerText = `Player ${currentPlayerIndex}, choose your number and name:`;
-            popup.appendChild(header);
-
-            const numberInput = document.createElement('input');
-            numberInput.type = 'number';
-            numberInput.min = 1;
-            numberInput.max = totalCount;
-            numberInput.placeholder = `Number (1-${totalCount})`;
-            popup.appendChild(numberInput);
-
-            const info = document.createElement('p');
-            info.innerText = `Choose a number from 1 to ${totalCount}`;
-            popup.appendChild(info);
-
-            const nameInput = document.createElement('input');
-            nameInput.type = 'text';
-            nameInput.placeholder = 'Name';
-            popup.appendChild(nameInput);
-
-            const nextButton = document.createElement('button');
-            nextButton.innerText = 'Next';
-            nextButton.onclick = function () {
-                const number = parseInt(numberInput.value, 10);
-                const name = nameInput.value.trim();
-                if (number >= 1 && number <= totalCount && name) {
-                    // Store the player's number and name
-                    playerDetails.push({ number, name });
-                    currentPlayerIndex++;
-                    if (currentPlayerIndex > playerCount) {
-                        // All players have entered their details
-                        document.body.removeChild(popup);
-                        startGame();
-                    } else {
-                        document.body.removeChild(popup);
-                        showPlayerInputPopup();
-                    }
-                } else {
-                    alert(`Please enter a valid number and name.`);
-                }
-            };
-            popup.appendChild(nextButton);
-
-            document.body.appendChild(popup);
-        }
-
-        function startGame() {
-            const body = document.querySelector('body');
-
-            // Create content container
-            const contentContainer = document.createElement('div');
-            contentContainer.className = 'content-container';
-
-            // Create squares container
-            const squaresContainer = document.createElement('div');
-            squaresContainer.className = 'squares-container';
-
-            for (let i = 1; i <= totalCount; i++) {
-                const square = document.createElement('div');
-                square.className = 'square';
-                square.innerText = i;
-                squaresContainer.appendChild(square);
-            }
-
-            // Create players container
-            const playersContainer = document.createElement('div');
-            playersContainer.className = 'players-container';
-
-            playerDetails.forEach((player, index) => {
-                const playerDiv = document.createElement('div');
-                playerDiv.className = 'player-detail';
-                playerDiv.innerText = `Player ${index + 1}: ${player.name}`;
-                playersContainer.appendChild(playerDiv);
-            });
-
-            // Append containers to the body
-            contentContainer.appendChild(squaresContainer);
-            contentContainer.appendChild(playersContainer);
-            body.appendChild(contentContainer);
-        }
-
-        document.getElementById('start').addEventListener('click', showpopup);
-        document.querySelectorAll('.option').forEach(option => {
-            option.addEventListener('click', handleOptionClick);
-        });
-        document.getElementById('nextButton').addEventListener('click', showPlayerOptions);
-        document.getElementById('playButton').addEventListener('click', play);
-    </script>
 </body>
 
 </html>
