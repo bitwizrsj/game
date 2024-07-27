@@ -4,127 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+    <title>Number Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
-    <script>
-        function showpopup() {
-            document.getElementById('hero').style.display = 'none';
-            document.getElementById('box').style.display = 'block';
-        }
-
-        function handleOptionClick(event) {
-            const options = document.querySelectorAll('.option');
-            options.forEach(option => option.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
-        }
-
-        function showPlayerOptions() {
-            const selectedTotalCount = document.querySelector('input[name="totalCount"]:checked');
-            if (selectedTotalCount) {
-                document.getElementById('totalCountSection').style.display = 'none';
-                document.getElementById('playerCountSection').style.display = 'block';
-                document.getElementById('navigationButtons').style.display = 'none';
-                document.getElementById('playerDetailsSection').style.display = 'none';
-                document.getElementById('nextPlayerCountButton').style.display = 'block';
-            } else {
-                alert('Please select a total count option.');
-            }
-        }
-
-        function showPlayerDetails() {
-            const selectedPlayerCount = document.querySelector('input[name="playerCount"]:checked');
-            if (selectedPlayerCount) {
-                const playerCount = parseInt(selectedPlayerCount.value, 10);
-                const totalCount = parseInt(document.querySelector('input[name="totalCount"]:checked').value, 10);
-
-                // Generate input fields for each player
-                const playerDetailsContainer = document.getElementById('playerDetailsContainer');
-                playerDetailsContainer.innerHTML = '';
-                for (let i = 1; i <= playerCount; i++) {
-                    const playerDiv = document.createElement('div');
-                    playerDiv.className = 'player-input flex flex-col mb-4';
-
-                    const playerNumberLabel = document.createElement('label');
-                    playerNumberLabel.className = 'text-white';
-                    playerNumberLabel.innerText = `Player ${i} Number:`;
-                    playerDiv.appendChild(playerNumberLabel);
-
-                    const playerNumberInput = document.createElement('input');
-                    playerNumberInput.type = 'number';
-                    playerNumberInput.name = `playerNumber${i}`;
-                    playerNumberInput.className = 'input-field';
-                    playerNumberInput.min = 1;
-                    playerNumberInput.max = totalCount;
-                    playerDiv.appendChild(playerNumberInput);
-
-                    const playerNameLabel = document.createElement('label');
-                    playerNameLabel.className = 'text-white mt-2';
-                    playerNameLabel.innerText = `Player ${i} Name:`;
-                    playerDiv.appendChild(playerNameLabel);
-
-                    const playerNameInput = document.createElement('input');
-                    playerNameInput.type = 'text';
-                    playerNameInput.name = `playerName${i}`;
-                    playerNameInput.className = 'input-field';
-                    playerDiv.appendChild(playerNameInput);
-
-                    playerDetailsContainer.appendChild(playerDiv);
-                }
-
-                document.getElementById('playerCountSection').style.display = 'none';
-                document.getElementById('playerDetailsSection').style.display = 'block';
-                document.getElementById('nextPlayerCountButton').style.display = 'none';
-                document.getElementById('playButton').style.display = 'block';
-            } else {
-                alert('Please select a player count option.');
-            }
-        }
-
-        function play() {
-            const totalCount = parseInt(document.querySelector('input[name="totalCount"]:checked').value, 10);
-            const playerDetailsContainer = document.getElementById('playerDetailsContainer');
-            const playerInputs = playerDetailsContainer.querySelectorAll('.player-input');
-
-            const players = [];
-            playerInputs.forEach(input => {
-                const playerNumber = input.querySelector('input[type="number"]').value;
-                const playerName = input.querySelector('input[type="text"]').value;
-                players.push({ number: playerNumber, name: playerName });
-            });
-
-            document.querySelector('.box').style.display = 'none';
-
-            const body = document.querySelector('body');
-
-            const contentContainer = document.createElement('div');
-            contentContainer.className = 'content-container';
-
-            const squaresContainer = document.createElement('div');
-            squaresContainer.className = 'squares-container';
-
-            for (let i = 1; i <= totalCount; i++) {
-                const square = document.createElement('div');
-                square.className = 'square';
-                square.innerText = i;
-                squaresContainer.appendChild(square);
-            }
-
-            const playersContainer = document.createElement('div');
-            playersContainer.className = 'players-container';
-
-            players.forEach(player => {
-                const playerDiv = document.createElement('div');
-                playerDiv.className = 'player-detail';
-                playerDiv.innerText = `${player.name} (Number: ${player.number})`;
-                playersContainer.appendChild(playerDiv);
-            });
-
-            contentContainer.appendChild(squaresContainer);
-            contentContainer.appendChild(playersContainer);
-            body.appendChild(contentContainer);
-        }
-    </script>
+    
 </head>
 
 <body class="w-full h-screen bg-zinc-900 flex flex-col items-center justify-center">
@@ -180,7 +63,6 @@
                     </label>
                 </div>
             </div>
-
             <!-- Section for player count options -->
             <div id="playerCountSection" style="display: none;">
                 <label for="playerCount" class="block mb-4 text-xl font-medium text-white text-center">Choose the number
@@ -211,8 +93,6 @@
 
             <!-- Section for player details input -->
             <div id="playerDetailsSection" style="display: none;">
-                <label for="playerDetails" class="block mb-4 text-xl font-medium text-white text-center">Enter player
-                    details:</label>
                 <div id="playerDetailsContainer" class="flex flex-col flex-grow overflow-y-auto"></div>
             </div>
 
@@ -237,6 +117,10 @@
             </div>
         </form>
     </div>
+
+    <script src="script.js">
+        
+    </script>
 </body>
 
 </html>

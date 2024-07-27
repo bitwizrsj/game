@@ -1,139 +1,168 @@
-let currentPlayerIndex = 1;
 let totalCount = 0;
-let playerCount = 0;
-const playerDetails = [];
+        let playerCount = 0;
+        let currentPlayer = 1;
+        let players = [];
+        let timer;
 
-// Create content container and players container only once
-const contentContainer = document.createElement('div');
-contentContainer.className = 'content-container';
-const playersContainer = document.createElement('div');
-playersContainer.className = 'players-container';
-contentContainer.appendChild(playersContainer);
-document.body.appendChild(contentContainer);
-
-function showpopup() {
-    document.getElementById('hero').style.display = 'none';
-    document.getElementById('box').style.display = 'block';
-}
-
-function handleOptionClick(event) {
-    const options = event.currentTarget.parentNode.children;
-    Array.from(options).forEach(option => option.classList.remove('selected'));
-    event.currentTarget.classList.add('selected');
-}
-
-function showPlayerOptions() {
-    const selectedTotalCount = document.querySelector('input[name="totalCount"]:checked');
-    if (selectedTotalCount) {
-        document.getElementById('totalCountSection').style.display = 'none';
-        document.getElementById('playerCountSection').style.display = 'block';
-        document.getElementById('previousButton').disabled = false;
-        document.getElementById('previousButton').classList.remove('disabled-button');
-        document.getElementById('playButton').style.display = 'block';
-    } else {
-        alert('Please select a total count option.');
-    }
-}
-
-function showTotalCountOptions() {
-    document.getElementById('totalCountSection').style.display = 'block';
-    document.getElementById('playerCountSection').style.display = 'none';
-    document.getElementById('previousButton').disabled = true;
-    document.getElementById('previousButton').classList.add('disabled-button');
-    document.getElementById('playButton').style.display = 'none';
-}
-
-function play() {
-    totalCount = parseInt(document.querySelector('input[name="totalCount"]:checked').value, 10);
-    playerCount = parseInt(document.querySelector('input[name="playerCount"]:checked').value, 10);
-
-    document.querySelector('.box').style.display = 'none';
-    showPlayerInputPopup();
-}
-
-function showPlayerInputPopup() {
-    const popup = document.createElement('div');
-    popup.className = 'popup bg-white rounded-lg p-4 absolute inset-0 m-auto';
-    popup.style.width = '300px';
-    popup.style.height = '300px';
-
-    const header = document.createElement('h3');
-    header.innerText = `Player ${currentPlayerIndex}, choose your number and name:`;
-    popup.appendChild(header);
-
-    const numberInput = document.createElement('input');
-    numberInput.type = 'number';
-    numberInput.min = 1;
-    numberInput.max = totalCount;
-    numberInput.placeholder = `Number (1-${totalCount})`;
-    popup.appendChild(numberInput);
-
-    const info = document.createElement('p');
-    info.innerText = `Choose a number from 1 to ${totalCount}`;
-    popup.appendChild(info);
-
-    const nameInput = document.createElement('input');
-    nameInput.type = 'text';
-    nameInput.placeholder = 'Name';
-    popup.appendChild(nameInput);
-
-    const nextButton = document.createElement('button');
-    nextButton.innerText = 'Next';
-    const nextButtonClickHandler = function () {
-        const number = parseInt(numberInput.value, 10);
-        const name = nameInput.value.trim();
-        nextButton.removeEventListener('click', nextButtonClickHandler);
-        if (number >= 1 && number <= totalCount && name) {
-        // Store the player's number and name
-        playerDetails.push({ number, name });
-        currentPlayerIndex++;
-        if (currentPlayerIndex > playerCount) {
-        // All players have entered their details
-        document.body.removeChild(popup);
-        startGame();
-        } else {
-        document.body.removeChild(popup);
-        showPlayerInputPopup();
+        function showpopup() {
+            document.getElementById('hero').style.display = 'none';
+            document.getElementById('box').style.display = 'block';
         }
-        } else {
-        // Handle invalid input
-        alert('Please enter a valid number and name.');
+
+        function handleOptionClick(event) {
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
         }
-        };
-    nextButton.addEventListener('click', nextButtonClickHandler);
-    popup.appendChild(nextButton);
 
-    document.body.appendChild(popup);
-}
+        function showPlayerOptions() {
+            const selectedTotalCount = document.querySelector('input[name="totalCount"]:checked');
+            if (selectedTotalCount) {
+                totalCount = parseInt(selectedTotalCount.value, 10);
+                document.getElementById('totalCountSection').style.display = 'none';
+                document.getElementById('playerCountSection').style.display = 'block';
+                document.getElementById('navigationButtons').style.display = 'none';
+                document.getElementById('nextPlayerCountButton').style.display = 'block';
+            } else {
+                alert('Please select a total count option.');
+            }
+        }
 
-function startGame() {
-    // Create squares container
-    const squaresContainer = document.createElement('div');
-    squaresContainer.className = 'squares-container';
+        function showPlayerDetails() {
+            const selectedPlayerCount = document.querySelector('input[name="playerCount"]:checked');
+            if (selectedPlayerCount) {
+                playerCount = parseInt(selectedPlayerCount.value, 10);
+                document.getElementById('playerCountSection').style.display = 'none';
+                document.getElementById('nextPlayerCountButton').style.display = 'none';
+                showPlayerInputForm(currentPlayer);
+            } else {
+                alert('Please select a player count option.');
+            }
+        }
 
-    for (let i = 1; i <= totalCount; i++) {
-        const square = document.createElement('div');
-        square.className = 'square';
-        square.innerText = i;
-        squaresContainer.appendChild(square);
-    }
+        function showPlayerInputForm(playerNumber) {
+            document.getElementById('playerDetailsSection').style.display = 'block';
+            document.getElementById('playerDetailsContainer').innerHTML = `
+                <label class="block mb-4 text-xl font-medium text-white text-center">Player ${playerNumber} Details:</label>
+                <div class="flex flex-col mb-4">
+                    <label class="text-white">Number (1-${totalCount}):</label>
+                    <input type="number" name="playerNumber" class="input-field" min="1" max="${totalCount}" required>
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label class="text-white">Name:</label>
+                    <input type="text" name="playerName" class="input-field" required>
+                </div>
+                <button type="button" onclick="savePlayerDetails()" class="px-4 py-2 bg-green-500 text-white font-bold rounded">Next</button>
+            `;
+        }
 
-    // Update players container
-    playersContainer.innerHTML = '';
-    playerDetails.forEach((player, index) => {
-        const playerDiv = document.createElement('div');
-        playerDiv.className = 'player-detail';
-        playerDiv.innerText = `Player ${index + 1}: ${player.name}`;
-playersContainer.appendChild(playerDiv);
-});
+        function savePlayerDetails() {
+            const playerNumber = document.querySelector('input[name="playerNumber"]').value;
+            const playerName = document.querySelector('input[name="playerName"]').value;
 
-// Append squares container to content container
-contentContainer.appendChild(squaresContainer);
-}
+            if (playerNumber < 1 || playerNumber > totalCount) {
+                alert(`Please enter a number between 1 and ${totalCount}.`);
+                return;
+            }
 
-document.getElementById('start').addEventListener('click', showpopup);
-document.querySelectorAll('.option').forEach(option => {
-option.addEventListener('click', handleOptionClick);
-});
-document.getElementById('nextButton').addEventListener('click', showPlayerOptions);
-document.getElementById('playButton').addEventListener('click', play);
+            players.push({ number: playerNumber, name: playerName });
+
+            if (currentPlayer < playerCount) {
+                currentPlayer++;
+                showPlayerInputForm(currentPlayer);
+            } else {
+                document.getElementById('playerDetailsSection').style.display = 'none';
+                document.getElementById('playButton').style.display = 'block';
+            }
+        }
+
+        function startPlayerTurn(playerIndex) {
+            const player = players[playerIndex];
+            let timeLeft = 15;
+
+            document.getElementById('timer').innerText = `Player ${playerIndex + 1}'s turn (${timeLeft}s)`;
+
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = `Player ${playerIndex + 1}'s turn (${timeLeft}s)`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    currentPlayer = (currentPlayer + 1) % playerCount;
+                    startPlayerTurn(currentPlayer);
+                }
+            }, 1000);
+        }
+
+        function handleSquareClick(event) {
+            const clickedSquare = event.target;
+            const clickedNumber = parseInt(clickedSquare.innerText, 10);
+            const player = players[currentPlayer];
+        
+            if (clickedNumber === parseInt(player.number)) {
+                alert(`You can't click your own number!`);
+                return;
+            }
+        
+            const winner = players.find(p => parseInt(p.number) === clickedNumber);
+        
+            if (winner) {
+                alert(`${winner.name} wins!`);
+                clearInterval(timer);
+                return;
+            }
+        
+            // Set the background color to transparent and disable click
+            clickedSquare.style.backgroundColor = 'transparent';
+            clickedSquare.style.pointerEvents = 'none'; // Disable clicks
+            clickedSquare.style.cursor = 'default'; // Change cursor to default
+        
+            clearInterval(timer);
+            currentPlayer = (currentPlayer + 1) % playerCount;
+            startPlayerTurn(currentPlayer);
+        }
+        
+        
+        
+        
+
+        function play() {
+            document.getElementById('box').style.display = 'none';
+            const body = document.querySelector('body');
+
+            const contentContainer = document.createElement('div');
+            contentContainer.className = 'content-container';
+
+            const squaresContainer = document.createElement('div');
+            squaresContainer.className = 'squares-container';
+
+            for (let i = 1; i <= totalCount; i++) {
+                const square = document.createElement('div');
+                square.className = 'square';
+                square.innerText = i;
+                square.style.cursor = 'pointer';
+                square.onclick = handleSquareClick;
+                squaresContainer.appendChild(square);
+            }
+
+            const playersContainer = document.createElement('div');
+            playersContainer.className = 'players-container';
+
+            players.forEach(player => {
+                const playerDiv = document.createElement('div');
+                playerDiv.className = 'player-detail';
+                playerDiv.innerText = `${player.name}`;
+                playersContainer.appendChild(playerDiv);
+            });
+
+            const timerDiv = document.createElement('div');
+            timerDiv.id = 'timer';
+            timerDiv.className = 'timer text-white text-xl mb-4';
+
+            contentContainer.appendChild(timerDiv);
+            contentContainer.appendChild(squaresContainer);
+            contentContainer.appendChild(playersContainer);
+            body.appendChild(contentContainer);
+
+            startPlayerTurn(0);
+        }
